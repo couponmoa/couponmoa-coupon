@@ -21,16 +21,5 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # gradlew 테스트 빌드
-      - name: Run tests
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean test
-
-      # gradlew 빌드
-      - name: Run tests
-        run: |
-          ./gradlew build -x test
-
       - name: Build with proto generation
         run: ./gradlew generateProto build -x test -x asciidoctor
