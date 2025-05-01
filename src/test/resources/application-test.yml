@@ -19,6 +19,9 @@ spring:
       port: 6379
       connect-timeout: 5s
       timeout: 5s
+    elasticsearch:
+      repositories:
+        enabled: false
 
   mail:
     host: localhost
