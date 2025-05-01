@@ -51,3 +51,7 @@ org:
   jobrunr:
     dashboard:
       enabled: false
+
+ai:
+  service:
+    url: http://dummy-url-for-test
