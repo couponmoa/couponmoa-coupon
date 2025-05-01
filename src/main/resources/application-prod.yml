@@ -4,11 +4,9 @@ server:
 spring:
   application:
     name: couponmoa
-    elasticsearch:
-      uris: ${ELASTIC_SEARCH_URL}
-      google:
-        api:
-          key: ${GOOGLE_API_KEY}
+  elasticsearch:
+    uris: ${ELASTIC_SEARCH_URL}
+
   data:
     redis:
       host: ${REDIS_HOST}
@@ -39,3 +37,7 @@ grpc:
       negotiation-type: plaintext
   server:
     port: 6565
+
+ai:
+  service:
+    url: http://couponmoa-dev-ai-service.couponmoa.local:8086

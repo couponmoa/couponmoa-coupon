@@ -1,4 +1,4 @@
-package com.couponmoa.backend.config;
+package com.couponmoa.backend.couponmoacoupon.config;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ElasticsearchConfig {
 
-    @Value("${spring.elasticsearch.uris:http://elasticsearch:9200}")
+    @Value("${spring.elasticsearch.uris}")
     private String elasticsearchUri;
 
     @Bean

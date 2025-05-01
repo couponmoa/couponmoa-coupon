@@ -1,5 +1,7 @@
 package com.couponmoa.backend.couponmoacoupon.domain.coupon.service.v2;
 
+import com.couponmoa.backend.couponmoacoupon.domain.coupon.dto.request.CouponDto;
+import com.couponmoa.backend.couponmoacoupon.domain.coupon.dto.request.RecommendRequest;
 import com.couponmoa.backend.couponmoacoupon.domain.coupon.entity.Search;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,75 +28,59 @@ public class CouponRecommendationService {
 
     private final CouponElasticsearchService couponElasticsearchService;
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
 
-    @Value("${google.api.key}")
-    private String googleApiKey;
+    @Value("${ai.service.url}")
+    private String aiServiceUrl;
 
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+    private static final String ENDPOINT = "/api/v1/coupon/recommend-ai";
 
-    public List<Search> getAIRecommendations(String userId) throws IOException {
-        List<String> keywords = couponElasticsearchService.getPopularKeywords(5);
-        List<Search> allCoupons = couponElasticsearchService.getAllCoupons();
+    public List<Search> getAIRecommendations(String userId) {
+        try {
+            List<Search> allCoupons = couponElasticsearchService.getAllCoupons();
 
-        String prompt = "Based on the keywords " + keywords + ", recommend up to 5 coupon IDs from the following list:\n" +
-                allCoupons.stream()
-                        .map(c -> String.format("ID: %d, Name: %s, Description: %s, Store: %s",
-                                c.getCouponId(), c.getName(), c.getDescription()))
-                        .reduce("", (a, b) -> a + b + "\n") +
-                "Return a JSON object with a key 'recommended_coupon_ids' containing a list of up to 5 coupon IDs.";
+            RecommendRequest requestDto = buildRecommendRequest(userId, allCoupons);
 
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("contents", List.of(
-                Map.of("parts", List.of(
-                        Map.of("text", prompt)
-                ))
-        ));
-        requestBody.put("generationConfig", Map.of(
-                "response_mime_type", "application/json"
-        ));
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<RecommendRequest> entity = new HttpEntity<>(requestDto, headers);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("x-goog-api-key", googleApiKey);
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<Map> response = restTemplate.postForEntity(aiServiceUrl + ENDPOINT, entity, Map.class);
 
-        Map<String, Object> response = restTemplate.postForObject(GEMINI_API_URL, request, Map.class);
-        List<Long> recommendedIds = extractRecommendedIds(response);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Map<String, Object> body = response.getBody();
+                if (body != null && body.get("recommended_coupon_ids") instanceof List<?>) {
+                    List<Long> recommendedIds = ((List<?>) body.get("recommended_coupon_ids")).stream()
+                            .map(id -> Long.valueOf(id.toString()))
+                            .collect(Collectors.toList());
 
-        return allCoupons.stream()
-                .filter(c -> recommendedIds.contains(c.getCouponId()))
-                .toList();
+                    return allCoupons.stream()
+                            .filter(c -> recommendedIds.contains(c.getCouponId()))
+                            .toList();
+                }
+            }
+        } catch (Exception e) {
+            log.error("AI 추천 요청 실패", e);
+        }
+
+        return Collections.emptyList();
     }
 
-    private List<Long> extractRecommendedIds(Map<String, Object> response) {
+    private RecommendRequest buildRecommendRequest(String userId, List<Search> allCoupons) {
         try {
-            List<?> candidates = (List<?>) response.get("candidates");
-            if (candidates == null || candidates.isEmpty()) {
-                log.warn("No candidates found in Gemini response");
-                return Collections.emptyList();
-            }
+            List<String> keywords = couponElasticsearchService.getPopularKeywords(5);
 
-            Map<String, Object> candidate = (Map<String, Object>) candidates.get(0);
-            Map<String, Object> content = (Map<String, Object>) candidate.get("content");
-            if (content == null) {
-                log.warn("No content found in Gemini response");
-                return Collections.emptyList();
-            }
+            List<CouponDto> coupons = allCoupons.stream()
+                    .map(c -> new CouponDto(
+                            c.getCouponId(),
+                            c.getName(),
+                            c.getDescription()
+                    ))
+                    .toList();
 
-            List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-            if (parts == null || parts.isEmpty()) {
-                log.warn("No parts found in Gemini response");
-                return Collections.emptyList();
-            }
-
-            String text = (String) parts.get(0).get("text");
-            Map<String, List<Long>> parsed = objectMapper.readValue(text, Map.class);
-            List<Long> recommendedIds = parsed.get("recommended_coupon_ids");
-            return recommendedIds != null ? recommendedIds : Collections.emptyList();
+            return new RecommendRequest(keywords, coupons);
         } catch (Exception e) {
-            log.error("Failed to parse Gemini response", e);
-            return Collections.emptyList();
+            log.error("AI 추천 데이터 생성 실패", e);
+            return new RecommendRequest(Collections.emptyList(), Collections.emptyList());
         }
     }
 }
