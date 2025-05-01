@@ -1,22 +1,16 @@
 package com.couponmoa.backend.couponmoacoupon.domain.coupon.service.v2;
 
-import com.couponmoa.backend.couponmoacoupon.domain.coupon.dto.request.CouponDto;
-import com.couponmoa.backend.couponmoacoupon.domain.coupon.dto.request.RecommendRequest;
 import com.couponmoa.backend.couponmoacoupon.domain.coupon.entity.Search;
+import com.couponmoa.backend.couponmoacoupon.domain.coupon.entity.SearchHistory;
+import com.couponmoa.backend.couponmoacoupon.domain.coupon.repository.SearchHistoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,61 +21,45 @@ import java.util.stream.Collectors;
 public class CouponRecommendationService {
 
     private final CouponElasticsearchService couponElasticsearchService;
-    private final RestTemplate restTemplate;
+    private final SearchHistoryRepository searchHistoryRepository;
+    private final ChatClient chatClient;
+    private final ObjectMapper objectMapper;
 
-    @Value("${ai.service.url}")
-    private String aiServiceUrl;
+    public List<Search> getAIRecommendations(Long userId) throws IOException {
+        List<String> userKeywords = searchHistoryRepository.findByUserId(userId.toString()).stream()
+                .map(SearchHistory::getKeyword)
+                .distinct()
+                .limit(5)
+                .collect(Collectors.toList());
 
-    private static final String ENDPOINT = "/api/v1/coupon/recommend-ai";
+        List<String> keywords = userKeywords.isEmpty() ?
+                couponElasticsearchService.getPopularKeywords(5) : userKeywords;
 
-    public List<Search> getAIRecommendations(String userId) {
-        try {
-            List<Search> allCoupons = couponElasticsearchService.getAllCoupons();
+        List<Search> allCoupons = couponElasticsearchService.getAllCoupons();
 
-            RecommendRequest requestDto = buildRecommendRequest(userId, allCoupons);
+        String prompt = "Based on user keywords " + keywords + ", recommend up to 5 coupon IDs from:\n" +
+                allCoupons.stream()
+                        .map(c -> String.format("ID: %d, Name: %s, Description: %s",
+                                c.getCouponId(), c.getName(), c.getDescription()))
+                        .reduce("", (a, b) -> a + b + "\n") +
+                "Return JSON with 'recommended_coupon_ids' key containing up to 5 IDs.";
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<RecommendRequest> entity = new HttpEntity<>(requestDto, headers);
+        String response = chatClient.prompt().user(prompt).call().content();
+        List<Long> recommendedIds = extractRecommendedIds(response);
 
-            ResponseEntity<Map> response = restTemplate.postForEntity(aiServiceUrl + ENDPOINT, entity, Map.class);
-
-            if (response.getStatusCode().is2xxSuccessful()) {
-                Map<String, Object> body = response.getBody();
-                if (body != null && body.get("recommended_coupon_ids") instanceof List<?>) {
-                    List<Long> recommendedIds = ((List<?>) body.get("recommended_coupon_ids")).stream()
-                            .map(id -> Long.valueOf(id.toString()))
-                            .collect(Collectors.toList());
-
-                    return allCoupons.stream()
-                            .filter(c -> recommendedIds.contains(c.getCouponId()))
-                            .toList();
-                }
-            }
-        } catch (Exception e) {
-            log.error("AI 추천 요청 실패", e);
-        }
-
-        return Collections.emptyList();
+        return allCoupons.stream()
+                .filter(c -> recommendedIds.contains(c.getCouponId()))
+                .toList();
     }
 
-    private RecommendRequest buildRecommendRequest(String userId, List<Search> allCoupons) {
+    private List<Long> extractRecommendedIds(String response) {
         try {
-            List<String> keywords = couponElasticsearchService.getPopularKeywords(5);
-
-            List<CouponDto> coupons = allCoupons.stream()
-                    .map(c -> new CouponDto(
-                            c.getCouponId(),
-                            c.getName(),
-                            c.getDescription()
-                    ))
-                    .toList();
-
-            return new RecommendRequest(keywords, coupons);
+            Map<String, List<Long>> parsed = objectMapper.readValue(response, Map.class);
+            List<Long> recommendedIds = parsed.get("recommended_coupon_ids");
+            return recommendedIds != null ? recommendedIds : Collections.emptyList();
         } catch (Exception e) {
-            log.error("AI 추천 데이터 생성 실패", e);
-            return new RecommendRequest(Collections.emptyList(), Collections.emptyList());
+            log.error("Failed to parse Gemini response", e);
+            return Collections.emptyList();
         }
     }
 }
-
