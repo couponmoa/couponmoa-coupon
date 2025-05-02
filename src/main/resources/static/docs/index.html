@@ -494,14 +494,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="paragraph">
 <div class="title"><code>ApiResponse</code> 구조</div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/common-response/response-fields.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/common-response/response-fields.adoc[]</p>
 </div>
 <div class="paragraph">
 <p>API 요청 시 필요한 헤더는 다음과 같습니다.</p>
 </div>
 <div class="paragraph">
 <div class="title"><code>API 요청 헤더</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/common-request/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/common-request/request-headers.adoc[]</p>
 </div>
 </div>
 </div>
@@ -521,10 +521,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /api/v2/coupons HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 297
+Content-Length: 300
 Host: localhost:8080
 
-{"name":"관리자 테스트 쿠폰","totalQuantity":1000,"discountAmount":1000,"discountRate":0,"minOrderAmount":0,"maxDiscountAmount":9999999,"description":null,"startDate":"2025-04-30T23:43:35.907444","endDate":"2025-05-09T23:43:35.907444","expiryDate":"2025-05-29T23:43:35.907444","storeId":1}</code></pre>
+{"name":"관리자 테스트 쿠폰","totalQuantity":1000,"discountAmount":1000,"discountRate":0,"minOrderAmount":0,"maxDiscountAmount":9999999,"description":null,"startDate":"2025-05-03T16:45:39.0525268","endDate":"2025-05-12T16:45:39.0525268","expiryDate":"2025-06-02T16:45:39.0525268","storeId":1}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -876,7 +876,7 @@ Expires: 0
 X-Frame-Options: DENY
 Content-Length: 575
 
-{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"content":[{"id":3,"name":"스토어 테스트 쿠폰","discountAmount":0,"discountRate":10,"startDate":"2025-04-27 22:26","endDate":"2025-05-06 22:26","status":"IN_PROGRESS"}],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"empty":true,"sorted":false,"unsorted":true},"offset":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":1,"size":10,"number":0,"sort":{"empty":true,"sorted":false,"unsorted":true},"first":true,"numberOfElements":1,"empty":false}}</code></pre>
+{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"content":[{"id":3,"name":"스토어 테스트 쿠폰","discountAmount":0,"discountRate":10,"startDate":"2025-04-27 22:26","endDate":"2025-05-06 22:26","status":"IN_PROGRESS"}],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"empty":true,"sorted":false,"unsorted":true},"offset":0,"paged":true,"unpaged":false},"last":true,"totalElements":1,"totalPages":1,"size":10,"number":0,"sort":{"empty":true,"sorted":false,"unsorted":true},"numberOfElements":1,"first":true,"empty":false}}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1092,7 +1092,7 @@ Expires: 0
 X-Frame-Options: DENY
 Content-Length: 437
 
-{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"id":1,"name":"상세 테스트 쿠폰","totalQuantity":100,"availableQuantity":80,"discountAmount":5000,"discountRate":null,"minOrderAmount":null,"maxDiscountAmount":null,"description":null,"startDate":"2025-04-28 23:43","endDate":"2025-05-09 23:43","expiryDate":"2025-06-29 23:43","createdAt":null,"modifiedAt":null,"status":"IN_PROGRESS"}}</code></pre>
+{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"id":1,"name":"상세 테스트 쿠폰","totalQuantity":100,"availableQuantity":80,"discountAmount":5000,"discountRate":null,"minOrderAmount":null,"maxDiscountAmount":null,"description":null,"startDate":"2025-05-01 16:45","endDate":"2025-05-12 16:45","expiryDate":"2025-07-02 16:45","createdAt":null,"modifiedAt":null,"status":"IN_PROGRESS"}}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1213,10 +1213,10 @@ Content-Length: 437
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">PUT /api/v2/coupons/1 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 254
+Content-Length: 255
 Host: localhost:8080
 
-{"name":"수정된 관리자 쿠폰","newTotalQuantity":500,"discountAmount":null,"discountRate":null,"minOrderAmount":null,"maxDiscountAmount":null,"description":null,"startDate":null,"endDate":"2025-05-19T23:43:36.591471","expiryDate":null,"storeId":1}</code></pre>
+{"name":"수정된 관리자 쿠폰","newTotalQuantity":500,"discountAmount":null,"discountRate":null,"minOrderAmount":null,"maxDiscountAmount":null,"description":null,"startDate":null,"endDate":"2025-05-22T16:45:39.9145258","expiryDate":null,"storeId":1}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1451,7 +1451,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 </table>
 <div class="paragraph">
 <div class="title"><code>Request Headers</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/user-coupon-issue-sync/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/user-coupon-issue-sync/request-headers.adoc[]</p>
 </div>
 <div class="listingblock">
 <div class="title"><code>HTTP Response</code></div>
@@ -1628,7 +1628,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="paragraph">
 <div class="title"><code>Request Headers</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/user-coupon-find-list/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/user-coupon-find-list/request-headers.adoc[]</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 19. <code>Query Parameters</code></caption>
@@ -1670,7 +1670,7 @@ Expires: 0
 X-Frame-Options: DENY
 Content-Length: 609
 
-{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"content":[{"id":1,"status":"UNUSED","discountAmount":1000,"discountRate":0,"name":"내 쿠폰 1","description":"설명1","expiryDate":"2025-05-29T23:43:39.0107773","minOrderAmount":0,"maxDiscountAmount":5000}],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"empty":true,"sorted":false,"unsorted":true},"offset":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":1,"size":10,"number":0,"sort":{"empty":true,"sorted":false,"unsorted":true},"first":true,"numberOfElements":1,"empty":false}}</code></pre>
+{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"content":[{"id":1,"status":"UNUSED","discountAmount":1000,"discountRate":0,"name":"내 쿠폰 1","description":"설명1","expiryDate":"2025-06-01T16:45:46.3575255","minOrderAmount":0,"maxDiscountAmount":5000}],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"empty":true,"sorted":false,"unsorted":true},"offset":0,"paged":true,"unpaged":false},"last":true,"totalElements":1,"totalPages":1,"size":10,"number":0,"sort":{"empty":true,"sorted":false,"unsorted":true},"numberOfElements":1,"first":true,"empty":false}}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1885,7 +1885,7 @@ Host: localhost:8080</code></pre>
 </table>
 <div class="paragraph">
 <div class="title"><code>Request Headers</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/user-coupon-find-code/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/user-coupon-find-code/request-headers.adoc[]</p>
 </div>
 <div class="listingblock">
 <div class="title"><code>HTTP Response</code></div>
@@ -1900,7 +1900,7 @@ Expires: 0
 X-Frame-Options: DENY
 Content-Length: 142
 
-{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"code":"e314e7ad-2bec-42de-9bd0-9c09e6accbbf"}}</code></pre>
+{"code":200,"status":"OK","message":"요청이 성공적으로 처리되었습니다.","data":{"code":"613e27c6-9618-4c5d-bbb1-1f61c4ab792d"}}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1955,12 +1955,12 @@ X-User_Id: 2
 Content-Length: 47
 Host: localhost:8080
 
-{"code":"84d449e3-2f58-4c6e-bcb4-15b9a1cda5f7"}</code></pre>
+{"code":"0ca742ae-d687-4d58-afba-7a9c82149fb8"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <div class="title"><code>Request Headers</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/user-coupon-use/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/user-coupon-use/request-headers.adoc[]</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 23. <code>Request Body</code></caption>
@@ -2141,7 +2141,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 </table>
 <div class="paragraph">
 <div class="title"><code>Request Headers</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/coupon-subscribe/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/coupon-subscribe/request-headers.adoc[]</p>
 </div>
 <div class="listingblock">
 <div class="title"><code>HTTP Response</code></div>
@@ -2232,7 +2232,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 </table>
 <div class="paragraph">
 <div class="title"><code>Request Headers</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/coupon-unsubscribe/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/coupon-unsubscribe/request-headers.adoc[]</p>
 </div>
 <div class="listingblock">
 <div class="title"><code>HTTP Response</code></div>
@@ -2303,7 +2303,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="paragraph">
 <div class="title"><code>Request Headers</code></div>
-<p>Unresolved directive in index.adoc - include::C:\Users\pannu\Downloads\couponmoa-coupon\build\generated-snippets/coupon-subscription-list/request-headers.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::G:\camp\spring\couponmoa-coupon\build\generated-snippets/coupon-subscription-list/request-headers.adoc[]</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 29. <code>Query Parameters</code></caption>
@@ -2519,7 +2519,7 @@ Content-Length: 136
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-04-29 23:24:27 +0900
+Last updated 2025-04-30 14:48:30 +0900
 </div>
 </div>
 </body>
