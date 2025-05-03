@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CouponRecommendationService {
 
     private final CouponElasticsearchService couponElasticsearchService;
@@ -34,11 +34,11 @@ public class CouponRecommendationService {
 
     private static final String ENDPOINT = "/api/v1/coupon/recommend-ai";
 
-    public List<Search> getAIRecommendations(String userId) {
+    public List<Search> getAIRecommendations() {
         try {
             List<Search> allCoupons = couponElasticsearchService.getAllCoupons();
 
-            RecommendRequest requestDto = buildRecommendRequest(userId, allCoupons);
+            RecommendRequest requestDto = buildRecommendRequest(allCoupons); // userId 제거됨
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -65,7 +65,7 @@ public class CouponRecommendationService {
         return Collections.emptyList();
     }
 
-    private RecommendRequest buildRecommendRequest(String userId, List<Search> allCoupons) {
+    private RecommendRequest buildRecommendRequest(List<Search> allCoupons) {
         try {
             List<String> keywords = couponElasticsearchService.getPopularKeywords(5);
 
