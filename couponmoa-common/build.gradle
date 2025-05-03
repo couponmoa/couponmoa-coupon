@@ -1,0 +1,135 @@
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures' // 모듈의 테스트 코드 중 다른 모듈에서 재사용하고 싶은 부분을 소스셋과 구성을 통해 관리, 공개
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.couponmoa.common'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.4"
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.0.1"
+    }
+}
+
+// 테스트 소스셋 정의
+sourceSets {
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
+// 테스트 관련 설정을 다른 모듈에서 접근할 수 있도록 선언
+configurations {
+    testRuntimeClasspath {
+        // 다른 프로젝트에서 이 설정을 의존할 수 있도록 허용
+    }
+    testImplementation {
+        // 다른 프로젝트에서 이 설정을 의존할 수 있도록 허용
+    }
+}
+
+dependencies {
+
+    // QueryDsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Data Commons & JPA (BaseRepository, BaseEntity 등)
+    implementation 'org.springframework.data:spring-data-commons'
+    implementation 'org.springframework.data:spring-data-jpa'
+    implementation 'jakarta.persistence:jakarta.persistence-api'
+    implementation 'jakarta.annotation:jakarta.annotation-api'
+
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Validation API
+    implementation 'jakarta.validation:jakarta.validation-api'
+    // 이 의존성은 common 모듈을 사용하는 다른 모듈에서도 필요하기 때문에 api 스코프 사용
+    api 'jakarta.servlet:jakarta.servlet-api'
+
+    // Redis (RedisService 용)
+    implementation 'org.springframework.data:spring-data-redis'
+    implementation 'io.lettuce:lettuce-core'
+
+    // SQS (SqsService 용)
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // Configuration Properties (@ConfigurationProperties 스캔용)
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // 테스트
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
+    }
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Testcontainers
+    testFixturesImplementation 'org.testcontainers:mysql'
+    testFixturesImplementation 'org.testcontainers:junit-jupiter'
+    testFixturesImplementation 'mysql:mysql-connector-java:8.0.28'
+    testFixturesImplementation 'org.testcontainers:testcontainers'
+
+    // Spring Boot Test Autoconfigure (Testcontainers와 함께 사용될 Spring Boot 기능을 위해 필요)
+    testFixturesImplementation 'org.springframework.boot:spring-boot-autoconfigure'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-test'
+    testFixturesImplementation 'org.springframework:spring-test'
+    testFixturesCompileOnly 'org.projectlombok:lombok'
+    testFixturesAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+
+
+def querydslGeneratedDirProvider = layout.buildDirectory.dir('generated/querydsl')
+
+sourceSets {
+    main {
+        java {
+            srcDirs += querydslGeneratedDirProvider.get().asFile
+            srcDirs += 'build/generated/source/proto/main/java'
+            srcDirs += 'build/generated/source/proto/main/grpc'
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.getGeneratedSourceOutputDirectory().set(layout.buildDirectory.dir('generated/querydsl'))
+}
+
+
+tasks.named('clean') {
+    delete layout.buildDirectory.dir('generated/querydsl')
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
