@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 option java_multiple_files = true;
 option java_package = "com.couponmoa.grpc.store";
 option java_outer_classname = "StoreProto";
@@ -11,6 +12,7 @@ service StoreService {
   rpc FindMySimpleStores(UserIdRequest) returns (StoreSimpleListResponse);
   rpc CreateStore(CreateStoreRequest) returns (StoreResponse);
   rpc FindSubscribedUserEmails(StoreIdRequest) returns (EmailListResponse);
+  rpc SearchStores(StoreSearchRequest) returns (StoreListResponse);
 }
 
 /*Request*/
@@ -29,6 +31,12 @@ message CreateStoreRequest {
   string address = 4;
 }
 
+message StoreSearchRequest {
+  optional string keyword = 1;
+  int32 size = 2;
+  optional int64 last_store_id = 3;
+}
+
 /*Response*/
 message StoreResponse {
   int64 id = 1;
@@ -38,8 +46,11 @@ message StoreResponse {
   string address = 5;
 }
 
+
 message StoreListResponse {
   repeated StoreResponse stores = 1;
+  optional int64 next_last_store_id = 2;
+  bool has_next = 3;
 }
 
 message StoreSimpleResponse {

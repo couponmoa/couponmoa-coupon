@@ -68,7 +68,10 @@ public enum ErrorCode {
     S3_CLIENT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 클라이언트 오류"),
 
     // redis
-    REDIS_FAILURE(INTERNAL_SERVER_ERROR, "Redis 서버에 문제가 발생했습니다.");
+    REDIS_FAILURE(INTERNAL_SERVER_ERROR, "Redis 서버에 문제가 발생했습니다."),
+
+    // grpc
+    GRPC_CLIENT_ERROR(BAD_REQUEST,"Store Grpc 통신에 실패했습니다." );
 
     private final HttpStatus httpStatus;
     private final String message;
